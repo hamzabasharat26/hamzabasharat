@@ -32,9 +32,9 @@ const SRC = {
   click: "/sounds/button-press.mp3",
 };
 
-const LANDING_VOLUME = 0.14;
+const LANDING_VOLUME = 0.18;
 const AGENT_MUSIC_VOLUME = 0.16;
-const AGENT_VOICE_VOLUME = 0.4;
+const AGENT_VOICE_VOLUME = 0.32;
 const CLICK_VOLUME = 0.35;
 const CLICK_POOL_SIZE = 4;
 
@@ -314,16 +314,17 @@ export function stopAgentIntro() {
 }
 
 // ---------------------------------------------------------------------------
-// System 3 — click SFX. One delegated listener, fires on mousedown/touchstart
-// (feels physical; onClick fires on release and reads as laggy) for any
-// press on a real control. A pool of 4 rotating instances survives rapid
-// clicks that would otherwise cut a still-playing instance off.
+// System 3 — click SFX. A pool of 4 rotating instances survives rapid clicks
+// that would otherwise cut a still-playing instance off.
 // ---------------------------------------------------------------------------
 const CLICKABLE = "a, button, summary, [role='button'], input[type='submit']";
 // Escape hatch for a control that plays its own distinctly-pitched click (the
 // agent's open/close triggers) — stops the generic delegate from layering a
 // second, default-pitch click on top of the same press.
 const SKIP_ATTR = "data-audio-skip";
+// A scroll and a tap both start as a touch on the same spot; only their
+// endpoint tells them apart. Past this many px of movement it's a scroll.
+const TAP_MOVE_TOLERANCE = 10;
 
 export function playClick(rate = 1) {
   const s = getStore();
@@ -335,21 +336,85 @@ export function playClick(rate = 1) {
   el.play().catch(() => {});
 }
 
+function controlFor(target: EventTarget | null): Element | null {
+  if (!(target instanceof Element)) return null;
+  const control = target.closest(CLICKABLE);
+  if (!control) return null;
+  if (control.hasAttribute("disabled") || control.getAttribute("aria-disabled") === "true") return null;
+  if (control.hasAttribute(SKIP_ATTR)) return null;
+  return control;
+}
+
 function installClickDelegate() {
   const s = getStore();
   if (!s || s.clickDelegateInstalled || !isBrowser()) return;
   s.clickDelegateInstalled = true;
-  const handler = (e: Event) => {
-    const target = e.target as Element | null;
-    if (!target) return;
-    const control = target.closest(CLICKABLE);
-    if (!control) return;
-    if (control.hasAttribute("disabled") || control.getAttribute("aria-disabled") === "true") return;
-    if (control.hasAttribute(SKIP_ATTR)) return;
-    playClick();
-  };
-  document.addEventListener("mousedown", handler, { capture: true, passive: true });
-  document.addEventListener("touchstart", handler, { capture: true, passive: true });
+
+  // Mouse: mousedown is unambiguous — a wheel scroll is a different input
+  // channel, so firing immediately here is safe and reads snappy.
+  document.addEventListener(
+    "mousedown",
+    (e) => {
+      if (controlFor(e.target)) playClick();
+    },
+    { capture: true, passive: true }
+  );
+
+  // Touch: touchstart alone can't tell a tap from the start of a scroll — a
+  // swipe that happens to begin over a full-card link (a project card, a nav
+  // link) was firing a click on every scroll. Arm on touchstart, disarm the
+  // instant the finger moves past a small tolerance, only actually play on
+  // touchend if it never did — a real tap, not a scroll that started there.
+  let touchStart: { x: number; y: number } | null = null;
+  let touchControl: Element | null = null;
+
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      const control = controlFor(e.target);
+      const t = e.touches[0];
+      if (control && t) {
+        touchStart = { x: t.clientX, y: t.clientY };
+        touchControl = control;
+      } else {
+        touchStart = null;
+        touchControl = null;
+      }
+    },
+    { capture: true, passive: true }
+  );
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!touchStart) return;
+      const t = e.touches[0];
+      if (!t) return;
+      const dx = t.clientX - touchStart.x;
+      const dy = t.clientY - touchStart.y;
+      if (dx * dx + dy * dy > TAP_MOVE_TOLERANCE * TAP_MOVE_TOLERANCE) {
+        touchStart = null;
+        touchControl = null;
+      }
+    },
+    { capture: true, passive: true }
+  );
+  document.addEventListener(
+    "touchend",
+    () => {
+      if (touchControl) playClick();
+      touchStart = null;
+      touchControl = null;
+    },
+    { capture: true, passive: true }
+  );
+  document.addEventListener(
+    "touchcancel",
+    () => {
+      touchStart = null;
+      touchControl = null;
+    },
+    { capture: true, passive: true }
+  );
 }
 
 // ---------------------------------------------------------------------------
