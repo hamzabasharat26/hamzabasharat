@@ -28,9 +28,9 @@ const SRC = {
   click: "/sounds/button-press.mp3",
 };
 
-const LANDING_VOLUME = 0.18;
-const AGENT_MUSIC_VOLUME = 0.16;
-const AGENT_VOICE_VOLUME = 0.32;
+const LANDING_VOLUME = 0.26;
+const AGENT_MUSIC_VOLUME = 0.22;
+const AGENT_VOICE_VOLUME = 0.4;
 const CLICK_VOLUME = 0.35;
 const CLICK_POOL_SIZE = 4;
 

@@ -108,7 +108,7 @@ export default function AgentPanel({
             >
               <span className="gradient-text">Pixel</span>
             </p>
-            <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-fg">
+            <span className="font-mono text-base uppercase tracking-[0.08em] text-fg">
               AI
             </span>
           </div>
