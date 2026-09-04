@@ -100,18 +100,13 @@ export default function AgentPanel({
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
         <div className="flex items-center gap-2.5">
           <AgentAvatar size={30} state={avatarState} level={avatarLevel} />
-          <div className="flex items-baseline gap-1.5">
-            <p
-              id={titleId}
-              data-speaking={avatarState === "speaking" ? "true" : undefined}
-              className="agent-name text-base font-semibold tracking-tight"
-            >
-              <span className="gradient-text">Pixel</span>
-            </p>
-            <span className="font-mono text-base uppercase tracking-[0.08em] text-fg">
-              AI
-            </span>
-          </div>
+          <p
+            id={titleId}
+            data-speaking={avatarState === "speaking" ? "true" : undefined}
+            className="agent-name text-base font-semibold tracking-tight"
+          >
+            <span className="gradient-text">Pixel</span>
+          </p>
         </div>
         <button
           type="button"
