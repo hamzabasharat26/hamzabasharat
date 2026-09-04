@@ -55,7 +55,7 @@ export const site = {
     github: 'https://github.com/hamzabasharat26',
     recommendations:
       'https://www.linkedin.com/in/hamzabasharat26/details/recommendations/?detailScreenTabIndex=0',
-    cv: '/Hamza_Basharat_CV_AI.pdf',
+    cv: '/media/Hamza_Basharat_AI_CV.pdf',
   },
 
   /**
@@ -108,7 +108,7 @@ export const site = {
 
   /** SEO. One canonical description; do not let each page invent its own. */
   seo: {
-    url: 'https://hamzabasharat.vercel.app',
+    url: 'https://hamzabasharat.tech',
     title: 'Hamza Basharat — AI / ML Engineer',
     description:
       'AI / ML Engineer in Pakistan shipping production systems: MagicQC garment QC (500+/day on AWS, 90%+ accuracy), edge defect detection at 0.81 mAP50 on OAK-1W, UAV perception for NESCOM, RAG agents into live Laravel/React backends. PyTorch · YOLO · LangGraph · Docker.',

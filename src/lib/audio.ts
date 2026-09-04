@@ -22,16 +22,16 @@
 type Bed = "landing" | "agent" | null;
 
 const SRC = {
-  landing: "/sounds/portfolio-music.mp3",
-  agentMusic: "/sounds/agent-music.mp3",
-  agentVoice: "/sounds/agent-voice.mp3",
-  click: "/sounds/button-press.mp3",
+  landing: "/media/sounds/portfolio-music.mp3",
+  agentMusic: "/media/sounds/agent-music.mp3",
+  agentVoice: "/media/sounds/agent-voice.mp3",
+  click: "/media/sounds/button-press.mp3",
 };
 
-const LANDING_VOLUME = 0.26;
-const AGENT_MUSIC_VOLUME = 0.22;
-const AGENT_VOICE_VOLUME = 0.4;
-const CLICK_VOLUME = 0.35;
+const LANDING_VOLUME = 0.32;
+const AGENT_MUSIC_VOLUME = 0.3;
+const AGENT_VOICE_VOLUME = 0.52;
+const CLICK_VOLUME = 0.5;
 const CLICK_POOL_SIZE = 4;
 
 function isBrowser() {

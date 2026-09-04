@@ -44,12 +44,6 @@ next-env.d.ts
 *.log
 Requirement.mp4
 
-# 3D source meshes — large, re-downloadable (see assets/ATTRIBUTION.md)
-/assets/*.glb
-/assets/*.stl
-/assets/*.obj
-/assets/preview/
-
 # puppeteer profile from scripts/audit-case-studies.mjs
 .chrome-profile/
 shots/**/.chrome-profile/
@@ -57,7 +51,7 @@ shots/**/.chrome-profile/
 # Raw Drive export — private third-party data (freelance_client_leads.xlsx),
 # a non-shipping CV variant, defence-adjacent stills, and 119MB of unencoded
 # video. Nothing here ships; scripts/build-media.mjs reads it and writes only
-# to public/media/. See docs/DRIVE-AUDIT.md.
+# to public/media/.
 /docs/drive/
 
 # Screen recordings and loose photos dropped at repo root for review — never ship

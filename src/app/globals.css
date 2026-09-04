@@ -396,12 +396,12 @@ html.lenis body {
 .agent-avatar-disc {
   inset: 2px;
   background-color: var(--color-ink-2);
-  background-image: url("/agent/avatar-128.webp");
+  background-image: url("/media/agent/avatar-128.webp");
   background-image: image-set(
-    url("/agent/avatar-128.avif") type("image/avif") 2x,
-    url("/agent/avatar-64.avif") type("image/avif") 1x,
-    url("/agent/avatar-128.webp") type("image/webp") 2x,
-    url("/agent/avatar-64.webp") type("image/webp") 1x
+    url("/media/agent/avatar-128.avif") type("image/avif") 2x,
+    url("/media/agent/avatar-64.avif") type("image/avif") 1x,
+    url("/media/agent/avatar-128.webp") type("image/webp") 2x,
+    url("/media/agent/avatar-64.webp") type("image/webp") 1x
   );
   background-size: cover;
   background-position: center;

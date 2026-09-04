@@ -8,7 +8,7 @@
 //
 //   node scripts/bake-agent-avatar.mjs
 //
-// Writes public/agent/avatar-{128,64}.{avif,webp}.
+// Writes public/media/agent/avatar-{128,64}.{avif,webp}.
 
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -16,7 +16,7 @@ import sharp from "sharp";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const SRC = path.join(ROOT, "image.png");
-const OUT = path.join(ROOT, "public", "agent");
+const OUT = path.join(ROOT, "public", "media", "agent");
 
 // Tight crop on the circuit-brain motif. The source is 1080x1080; this square
 // frames the brain and lets only the fingertips into the bottom of the circle,
