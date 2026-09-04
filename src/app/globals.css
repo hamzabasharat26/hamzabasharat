@@ -1,0 +1,734 @@
+@import "tailwindcss";
+
+/* ============================================================
+   SITE DESIGN TOKENS
+   Dark, motion-led, editorial. One accent ramp, no rainbow.
+   ============================================================ */
+
+@theme {
+  /* Surfaces — a cool near-black with a trace of blue, so it sits under the
+     cyan accent as "night lab" rather than flat void. Never pure #000. */
+  --color-ink: #06070c;
+  --color-ink-2: #0c0d15;
+  --color-surface: #13141d;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Type */
+  --color-fg: #f2f3f7;
+  --color-fg-dim: #a6a8b3;
+  /* Measured on the new ink: 4.9:1, still reads muted. Carries .label. */
+  --color-fg-mute: #7e808d;
+
+  /* Accent ramp — cyan → indigo → violet, a cool technical read (the emerald
+     a1 is reserved for "live / in production" status only, never body text).
+     Single source of truth: hero backdrop, branded posters, gradient text. */
+  --color-a1: #34d399;
+  --color-a2: #22d3ee;
+  --color-a3: #6366f1;
+  --color-a4: #a855f7;
+  /* Accent used as TEXT / icon on the page background — clears 4.5:1 both ways,
+     so it is not one of the ramp stops. */
+  --color-accent-ink: #38bdf8;
+
+  /* Hero backdrop layers — flipped in the light block below. */
+  --hb-line: rgba(255, 255, 255, 0.05);
+  --hb-dot: color-mix(in oklab, var(--color-a2) 26%, transparent);
+  --hb-star: rgba(255, 255, 255, 0.22);
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+/* ---- Theme -------------------------------------------------------------
+   Dark is the base (also the no-JS fallback). A tiny inline script in
+   layout.tsx sets data-theme on <html> before first paint from
+   localStorage → system preference → "dark". Light re-points the surface and
+   type tokens only; the accent ramp is unchanged.
+
+   The `[data-theme]` selectors are NOT scoped to :root — LightSections stamps
+   `data-theme="light"` on its card so the white island survives in dark mode,
+   and that only works if a nested element can re-point the tokens too. */
+:root {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #fafaf9;
+  --color-ink-2: #ffffff;
+  --color-surface: #ffffff;
+  --color-line: rgba(28, 25, 23, 0.09);
+  --color-line-strong: rgba(28, 25, 23, 0.16);
+  --color-fg: #1c1a17;
+  --color-fg-dim: #57534e;
+  --color-fg-mute: #78716c;
+  --color-accent-ink: #0e7490;
+  --hb-line: rgba(28, 25, 23, 0.055);
+  --hb-dot: color-mix(in oklab, var(--color-a3) 34%, transparent);
+  --hb-star: rgba(28, 25, 23, 0.13);
+}
+
+/* Re-assert dark, in case a dark region is nested inside a light one. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink: #06070c;
+  --color-ink-2: #0c0d15;
+  --color-surface: #13141d;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+  --color-fg: #f2f3f7;
+  --color-fg-dim: #a6a8b3;
+  --color-fg-mute: #7e808d;
+  --color-accent-ink: #38bdf8;
+  --hb-line: rgba(255, 255, 255, 0.05);
+  --hb-dot: color-mix(in oklab, var(--color-a2) 26%, transparent);
+  --hb-star: rgba(255, 255, 255, 0.22);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Lenis owns the scroll — disable native smooth behaviour */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* ---- Type primitives ---------------------------------------- */
+
+.display {
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-fg-mute);
+}
+
+.gradient-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-a2),
+    var(--color-a3) 45%,
+    var(--color-a4)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* On white the cyan stop is too pale — pull the ramp darker. */
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(100deg, #0e7490, #4f46e5 45%, #7e22ce);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+[data-theme="dark"] .gradient-text {
+  background: linear-gradient(100deg, var(--color-a2), var(--color-a3) 45%, var(--color-a4));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* ---- Hero vertical fit ---------------------------------------
+   min-height: 100svh guarantees the section is at least the viewport. It does
+   nothing to stop the CONTENT being taller than that, which is what clipped
+   the proof strip on a short-and-wide window. Everything in the hero scaled on
+   vw only, so a 1533x745 viewport had no way to respond.
+
+   These blocks change VALUES, not layout rules — the grid is declared once in
+   Hero.tsx and never duplicated per breakpoint. 1366x768 is the acceptance
+   case; anything taller inherits the comfortable defaults. */
+
+.hero {
+  --hero-pad-top: 6.5rem;
+  --hero-pad-bottom: 2rem;
+  --hero-name: clamp(3.25rem, 9.5vw, 7.5rem);
+  --hero-headline: clamp(1.5rem, 3vw, 2.5rem);
+  --hero-sub: 1rem;
+  --hero-stat: 1.875rem;
+  --hero-gap: 1.25rem;
+  --hero-strip-gap: 1.5rem;
+}
+
+/* The common laptop case. */
+@media (max-height: 899px) {
+  .hero {
+    --hero-pad-top: 5.5rem;
+    --hero-name: clamp(3rem, 8vw, 5.5rem);
+    --hero-headline: clamp(1.35rem, 2.6vw, 2.1rem);
+    --hero-sub: 0.9375rem;
+    --hero-stat: 1.6rem;
+    --hero-gap: 1rem;
+    --hero-strip-gap: 1.125rem;
+  }
+}
+
+/* Short windows — the failing case. */
+@media (max-height: 780px) {
+  .hero {
+    --hero-pad-top: 5rem;
+    --hero-pad-bottom: 1.25rem;
+    --hero-name: clamp(2.6rem, 6.5vw, 4.25rem);
+    --hero-headline: clamp(1.2rem, 2.2vw, 1.8rem);
+    --hero-sub: 0.875rem;
+    --hero-stat: 1.375rem;
+    --hero-gap: 0.75rem;
+    --hero-strip-gap: 0.875rem;
+  }
+}
+
+/* Narrow viewports. Width, not height, is what pushes the subhead onto a
+   fourth line at 390px and below — the 46ch cap stops binding once the
+   viewport is narrower than 46 characters. */
+@media (max-width: 480px) {
+  .hero {
+    --hero-sub: 0.8125rem;
+  }
+  /* The stat captions are mono with wide tracking, which is what tips them
+     onto a second line in a half-width mobile column. Tighten the tracking
+     rather than dropping the caption — the caption is the part that makes the
+     number checkable. */
+  .hero-stat-context {
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero {
+    --hero-sub: 0.75rem;
+  }
+}
+
+/* Below this there is no room for a third line of stat caption at all. The
+   number and its label carry the meaning; the context line is the part that
+   can go. */
+@media (max-height: 700px) {
+  .hero-stat-context {
+    display: none;
+  }
+}
+
+/* ---- Hero particle field --------------------------------- */
+.hero-particles { opacity: 0.8; }
+[data-theme="light"] .hero-particles { opacity: 0.55; }
+
+/* ---- Hero aurora ------------------------------------------
+   A soft cool glow set behind the name. Static — Hero.tsx fades it in once on
+   load and it never loops (CLAUDE §4). No filter:blur (that repaints on
+   scroll). Off under reduced motion. */
+.hero-aurora {
+  top: calc(var(--hero-pad-top) - 3rem);
+  left: -12%;
+  width: 70%;
+  height: 66%;
+  /* soft radial — no filter:blur (that repaints on scroll through the hero) */
+  background: radial-gradient(
+    46% 48% at 42% 44%,
+    color-mix(in oklab, var(--color-a3) 20%, transparent),
+    color-mix(in oklab, var(--color-a3) 9%, transparent) 38%,
+    color-mix(in oklab, var(--color-a2) 5%, transparent) 58%,
+    transparent 78%
+  );
+  opacity: 0.9;
+}
+[data-theme="light"] .hero-aurora {
+  opacity: 0.5;
+}
+
+
+/* Reserve the launcher's corner so the proof strip never runs under it.
+   On mobile the launcher collapses to a circle and the strip stacks, so the
+   inset is dropped rather than wasting a quarter of a 360px viewport. */
+.proof-strip {
+  padding-inline-end: clamp(0px, 14vw, 220px);
+}
+@media (max-width: 768px) {
+  .proof-strip {
+    /* No horizontal inset — that would waste a quarter of a 360px viewport.
+       The launcher is a bare circle at this width, so the strip ends above it
+       instead of beside it. */
+    padding-inline-end: 0;
+    padding-block-end: 4.25rem;
+  }
+}
+
+/* Scroll cue. Without it a partly-visible proof strip reads as a clipping bug;
+   with it, the same strip reads as an invitation. Fades on first scroll. */
+.scroll-cue {
+  transition: opacity 400ms var(--ease-out-expo);
+}
+.scroll-cue[data-scrolled="true"] {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue-mark {
+    animation: cue-bob 2.4s ease-in-out infinite;
+  }
+}
+@keyframes cue-bob {
+  50% {
+    translate: 0 4px;
+  }
+}
+
+/* Words are wrapped by SplitText-style markup; each line clips its own mask */
+.line-mask {
+  overflow: hidden;
+  display: block;
+}
+
+/* Nav inversion over the white About/FAQ band.
+   Driven by ScrollTrigger's toggleClass rather than React state: this is a
+   pure presentation flip and routing it through a re-render made the pill lag
+   a frame behind the scroll. */
+.nav-shell {
+  border-color: var(--color-line);
+  background: color-mix(in oklab, var(--color-ink-2) 70%, transparent);
+  color: var(--color-fg);
+}
+.nav-shell a { color: var(--color-fg-dim); }
+.nav-shell a:hover { color: var(--color-fg); }
+.nav-shell .nav-brand,
+.nav-shell .nav-cta { color: var(--color-fg); }
+.nav-shell .nav-cta { border-color: var(--color-line-strong); }
+
+.nav-light .nav-shell {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0b0a0f;
+}
+.nav-light .nav-shell a { color: #4a4756; }
+.nav-light .nav-shell a:hover { color: #0b0a0f; }
+.nav-light .nav-shell .nav-brand,
+.nav-light .nav-shell .nav-cta,
+.nav-light .nav-shell .nav-toggle { color: #0b0a0f; }
+.nav-light .nav-shell .nav-cta,
+.nav-light .nav-shell .nav-toggle { border-color: rgba(0, 0, 0, 0.2); }
+
+/* Focus ring. There were ten interactive elements and zero focus styles —
+   keyboard users got only the UA default, which is invisible on a rounded dark
+   pill over a WebGL canvas. */
+:focus-visible {
+  outline: 2px solid var(--color-a2);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.nav-light :focus-visible {
+  outline-color: #0b0a0f;
+}
+
+/* Skip link — the page is ~8 viewports of canvas before the first real
+   landmark, which is a long way to tab through. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 50%;
+  translate: -50% -200%;
+  z-index: 200;
+  border-radius: 9999px;
+  background: var(--color-fg);
+  color: var(--color-ink);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  transition: translate 200ms var(--ease-out-expo);
+}
+.skip-link:focus-visible {
+  translate: -50% 0;
+}
+
+/* ---- Agent avatar -------------------------------------------
+   Three stacked layers over the baked duotone disc. The ring is the only
+   thing that animates, and it animates transform alone — never box-shadow,
+   filter or gradient stops, all of which repaint every frame.
+
+   Ring speed carries state: idle is slow enough to be ambient, thinking is
+   the one place it is allowed to feel urgent. The global reduced-motion
+   block at the foot of this file stills all of it. */
+
+.agent-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 9999px;
+  /* Domed, not flat: a bright rim at the top, shadow pooled at the bottom. */
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 calc(var(--avatar-size) * -0.18) calc(var(--avatar-size) * 0.2)
+      rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 200ms var(--ease-out-expo);
+}
+
+.agent-avatar-disc,
+.agent-avatar-ring,
+.agent-avatar-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.agent-avatar-disc {
+  inset: 2px;
+  background-color: var(--color-ink-2);
+  background-image: url("/agent/avatar-128.webp");
+  background-image: image-set(
+    url("/agent/avatar-128.avif") type("image/avif") 2x,
+    url("/agent/avatar-64.avif") type("image/avif") 1x,
+    url("/agent/avatar-128.webp") type("image/webp") 2x,
+    url("/agent/avatar-64.webp") type("image/webp") 1x
+  );
+  background-size: cover;
+  background-position: center;
+}
+
+/* The animated layer. A conic sweep clipped to a hairline annulus. */
+.agent-avatar-ring {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--color-a1) 55deg,
+    var(--color-a2) 130deg,
+    transparent 210deg,
+    transparent 300deg,
+    var(--color-a3) 350deg,
+    transparent 360deg
+  );
+  mask: radial-gradient(
+    closest-side,
+    transparent calc(100% - 2px),
+    #000 calc(100% - 2px)
+  );
+  animation: avatar-ring 8s linear infinite;
+  will-change: transform;
+}
+
+/* Specular hit, upper left. Static — it is the light source, not the motion. */
+.agent-avatar-gloss {
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0.06) 38%,
+    transparent 62%
+  );
+}
+
+@keyframes avatar-ring {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Hover / focus lives on whatever wraps the avatar, so the whole control
+   responds rather than just the disc. */
+.agent-launcher:hover .agent-avatar,
+.agent-launcher:focus-visible .agent-avatar,
+.agent-tab:hover .agent-avatar,
+.agent-tab:focus-visible .agent-avatar {
+  transform: scale(1.05);
+}
+.agent-launcher:hover .agent-avatar-ring,
+.agent-launcher:focus-visible .agent-avatar-ring,
+.agent-tab:hover .agent-avatar-ring,
+.agent-tab:focus-visible .agent-avatar-ring {
+  animation-duration: 3s;
+}
+
+/* Open: the panel has the attention now, so the ring backs off. */
+.agent-avatar[data-state="open"] .agent-avatar-ring {
+  animation-duration: 14s;
+  opacity: 0.55;
+}
+
+/* Thinking: the one urgent state, and the only place a pulse is warranted. */
+.agent-avatar[data-state="thinking"] .agent-avatar-ring {
+  animation-duration: 1.2s;
+}
+.agent-avatar[data-state="thinking"] {
+  animation: avatar-think 1.2s ease-in-out infinite;
+}
+@keyframes avatar-think {
+  50% {
+    opacity: 0.62;
+  }
+}
+
+/* Speaking: while the agent intro (voice + music) plays. A modest CSS pulse
+   is the baseline — it needs nothing but the state, so audio keeps working
+   even if the Web Audio analyser below never attaches. When it does attach,
+   AgentLauncher writes --avatar-level (0-1) every frame and the glow layer
+   rides on top of the baseline pulse. */
+.agent-avatar[data-state="speaking"] .agent-avatar-ring {
+  animation-duration: 2.4s;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .agent-avatar[data-state="speaking"] {
+    animation: avatar-think 1.6s ease-in-out infinite;
+  }
+}
+.agent-avatar-glow {
+  position: absolute;
+  inset: -30%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-a2) 55%, transparent),
+    transparent 70%
+  );
+  /* A floor so it reads as "on" the instant speech starts, then breathes
+     with the real amplitude on top once the analyser attaches. */
+  opacity: calc(0.3 + var(--avatar-level, 0) * 0.6);
+  transform: scale(calc(1 + var(--avatar-level, 0) * 0.18));
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-avatar-glow { display: none; }
+}
+
+/* Two small dots orbiting the disc on opposite paths, opposite directions,
+   staggered — cheap depth cue standing in for an actual 3D scene. Sized off
+   --avatar-size so they scale with the avatar wherever it's used. */
+.agent-avatar-orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.agent-avatar-orbit span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px;
+  border-radius: 9999px;
+  background: var(--color-a2);
+  box-shadow: 0 0 6px 1px color-mix(in oklab, var(--color-a2) 70%, transparent);
+}
+.agent-avatar-orbit span:last-child {
+  background: var(--color-a3);
+  box-shadow: 0 0 6px 1px color-mix(in oklab, var(--color-a3) 70%, transparent);
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .agent-avatar-orbit span:first-child {
+    animation: avatar-orbit 2.2s linear infinite;
+  }
+  .agent-avatar-orbit span:last-child {
+    animation: avatar-orbit 2.2s linear infinite reverse;
+    animation-delay: -1.1s;
+  }
+}
+@keyframes avatar-orbit {
+  from { transform: rotate(0deg) translateX(calc(var(--avatar-size) * 0.6)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(calc(var(--avatar-size) * 0.6)) rotate(-360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-avatar-orbit { display: none; }
+}
+
+/* The panel header's name — a plain label read as an afterthought, so it
+   gets the site's own gradient-text treatment plus a shimmer sweep while
+   Pixel is actually talking (not a permanent animation — it would nag). */
+.agent-name .gradient-text {
+  background-size: 220% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .agent-name[data-speaking="true"] .gradient-text {
+    animation: agent-name-shimmer 1.6s linear infinite;
+  }
+}
+@keyframes agent-name-shimmer {
+  to { background-position: -220% center; }
+}
+
+/* The message list owns its own scroll — without this, hitting the top or
+   bottom of a short conversation chains the scroll straight through to the
+   page behind the panel. Works for wheel and touch alike, no JS needed. */
+.agent-scroll {
+  overscroll-behavior: contain;
+}
+
+/* Agent panel entrance/exit — spring from the launcher origin on open, a
+   quicker snap-down on close so the two read as genuinely different
+   gestures (paired with a distinct pitch on the click SFX — see
+   AgentLauncher.tsx). Gated on no-preference; the global reduce block below
+   flattens both otherwise. */
+@media (prefers-reduced-motion: no-preference) {
+  .agent-panel {
+    transform-origin: bottom right;
+    animation: agent-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .agent-panel[data-closing="true"] {
+    animation: agent-out 160ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+}
+@keyframes agent-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes agent-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(6px) scale(0.97); }
+}
+
+/* ---- Custom cursor ------------------------------------------
+   Decorative accent over the native cursor (native stays visible — a
+   disappearing cursor is a usability bug). `mix-blend-mode: difference` sits on
+   the ring/dot themselves — NOT the full-viewport layer — so the compositor
+   only blends ~34px, not 1440×900 on every scrolled frame (that cost ~6fps on
+   an integrated GPU). Suppressed entirely under reduced motion below. */
+.cursor-layer { display: none; }
+.cursor-layer[data-on="true"] { display: block; }
+.cursor-ring,
+.cursor-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
+  transition: opacity 200ms ease;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #fff;
+  transition: width 260ms var(--ease-out-expo), height 260ms var(--ease-out-expo),
+    opacity 200ms ease, background-color 200ms ease;
+}
+.cursor-ring[data-hover="true"] {
+  width: 58px;
+  height: 58px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.cursor-ring[data-down="true"] { width: 26px; height: 26px; }
+.cursor-dot {
+  width: 5px;
+  height: 5px;
+  background: #fff;
+}
+
+/* ---- Route transition --------------------------------------
+   app/template.tsx remounts on every client navigation; this is its entry.
+
+   `backwards`, NOT `both`: `both` retains the `to` keyframe's
+   `transform: translateY(0)` forever, and ANY non-`none` transform on this
+   wrapper makes it the containing block for every `position: fixed`
+   descendant — which quietly pinned the nav, the cursor and the assistant to
+   the bottom of the page instead of the viewport. `backwards` gives the same
+   entry (the `from` state applies before the run) and then drops the
+   transform the instant the 420ms animation ends. */
+@media (prefers-reduced-motion: no-preference) {
+  .route-in {
+    animation: route-in 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+}
+@keyframes route-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Hero backdrop (replaces the WebGL cloud) -------------
+   Cool instrument read, not a glow. All transform/opacity, all frozen under
+   reduced motion by the block at the foot of this file. */
+@media (prefers-reduced-motion: no-preference) {
+  .hb-scan {
+    animation: hb-scan 12s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    opacity: 0;
+  }
+  .hb-box {
+    animation: hb-pulse 6s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .hb-box-2 { animation-duration: 7.5s; animation-delay: -2s; }
+}
+@keyframes hb-scan {
+  0% { transform: translateY(0); opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+@keyframes hb-pulse {
+  0%, 100% { opacity: 0.22; }
+  50% { opacity: 0.6; }
+}
+
+/* ---- Marquee (stack ticker + project strip) --------------- */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 42s linear infinite;
+}
+.marquee-track:hover .marquee { animation-play-state: paused; }
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* ---- Off-screen sections don't paint --------------------- */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
+/* ---- Agent first-visit hint ------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .agent-hint { animation: agent-in 260ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .agent-launcher[data-hint="true"] { animation: agent-nudge 1.6s ease-in-out 2; }
+  .agent-tab[data-hint="true"] { animation: agent-tab-nudge 1.6s ease-in-out 2; }
+}
+@keyframes agent-nudge {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-4px); }
+}
+@keyframes agent-tab-nudge {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  40% { transform: translateY(-50%) translateX(-5px); }
+}
+
+/* ---- Accessibility ------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cursor-layer { display: none !important; }
+  .marquee { animation: none !important; }
+  .marquee-track { overflow-x: auto; }
+  .hb-scan { opacity: 0 !important; }
+  .hb-box { opacity: 0.3 !important; }
+}
+
+::selection {
+  background: var(--color-a3);
+  color: #fff;
+}

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0c0b12"/><stop offset="1" stop-color="#0a0910"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+
+  <!-- window chrome -->
+  <rect x="0" y="0" width="1280" height="44" fill="#141320"/>
+  <circle cx="26" cy="22" r="5" fill="#3a3947"/><circle cx="46" cy="22" r="5" fill="#3a3947"/><circle cx="66" cy="22" r="5" fill="#3a3947"/>
+  <text x="640" y="27" text-anchor="middle" fill="#6b6878" font-size="13">CV Recruiter · candidate ranking</text>
+
+  <!-- left: job description -->
+  <rect x="32" y="76" width="360" height="692" rx="12" fill="#12111c" stroke="#ffffff" stroke-opacity="0.06"/>
+  <text x="56" y="112" fill="#8f8b9b" font-size="12" letter-spacing="2">JOB DESCRIPTION</text>
+  <text x="56" y="146" fill="#f3f1f7" font-size="19" font-weight="600">Senior ML Engineer</text>
+  <text x="56" y="172" fill="#a5a1b0" font-size="13">Computer vision · edge deployment</text>
+  <g fill="#7d7989" font-size="12.5">
+    <text x="56" y="214">Must-have</text>
+  </g>
+  <g font-size="12.5" fill="#c9c6d4">
+    <rect x="56" y="228" width="300" height="30" rx="6" fill="#1b1a28"/><text x="70" y="248">Production CV pipelines · YOLO / PyTorch</text>
+    <rect x="56" y="266" width="300" height="30" rx="6" fill="#1b1a28"/><text x="70" y="286">Edge inference · ONNX / DepthAI</text>
+    <rect x="56" y="304" width="300" height="30" rx="6" fill="#1b1a28"/><text x="70" y="324">MLOps · monitoring, versioning</text>
+  </g>
+  <g fill="#7d7989" font-size="12.5"><text x="56" y="374">Nice-to-have</text></g>
+  <g font-size="12.5" fill="#8f8b9b">
+    <text x="56" y="400">RAG / LLM agents · LangGraph</text>
+    <text x="56" y="424">Manufacturing / industrial domain</text>
+  </g>
+  <line x1="56" y1="468" x2="368" y2="468" stroke="#ffffff" stroke-opacity="0.06"/>
+  <text x="56" y="500" fill="#7d7989" font-size="12">14 CVs parsed · PDF + DOCX → vector store</text>
+  <text x="56" y="524" fill="#7d7989" font-size="12">Ranked in 6.2s</text>
+
+  <!-- right: ranked candidates -->
+  <text x="428" y="100" fill="#8f8b9b" font-size="12" letter-spacing="2">RANKED CANDIDATES · CITATION-BACKED</text>
+
+  <!-- card 1 -->
+  <rect x="428" y="118" width="820" height="150" rx="12" fill="#15141f" stroke="#34d399" stroke-opacity="0.4"/>
+  <circle cx="466" cy="152" r="16" fill="#1e2b26"/><text x="466" y="157" text-anchor="middle" fill="#34d399" font-size="13" font-weight="700">1</text>
+  <text x="498" y="150" fill="#f3f1f7" font-size="17" font-weight="600">Candidate A</text>
+  <text x="498" y="172" fill="#8f8b9b" font-size="12.5">4 yrs · shipped 3 vision systems to production</text>
+  <text x="1220" y="150" text-anchor="end" fill="#34d399" font-size="24" font-weight="700">92</text>
+  <text x="1220" y="170" text-anchor="end" fill="#7d7989" font-size="11">match score</text>
+  <rect x="498" y="192" width="700" height="6" rx="3" fill="#232231"/>
+  <rect x="498" y="192" width="644" height="6" rx="3" fill="url(#bar)"/>
+  <rect x="498" y="216" width="430" height="34" rx="6" fill="#101c18" stroke="#34d399" stroke-opacity="0.25"/>
+  <text x="514" y="237" fill="#9fe9cf" font-size="11.5">“deployed YOLOv8 defect detection on OAK-1W, 0.81 mAP”</text>
+  <text x="944" y="237" fill="#5f7d72" font-size="10.5">cv.pdf · line 18</text>
+
+  <!-- card 2 -->
+  <rect x="428" y="286" width="820" height="132" rx="12" fill="#14131e" stroke="#ffffff" stroke-opacity="0.06"/>
+  <circle cx="466" cy="320" r="16" fill="#222131"/><text x="466" y="325" text-anchor="middle" fill="#c9c6d4" font-size="13" font-weight="700">2</text>
+  <text x="498" y="318" fill="#f3f1f7" font-size="17" font-weight="600">Candidate B</text>
+  <text x="498" y="340" fill="#8f8b9b" font-size="12.5">6 yrs · strong MLOps, lighter on CV</text>
+  <text x="1220" y="318" text-anchor="end" fill="#22d3ee" font-size="24" font-weight="700">78</text>
+  <text x="1220" y="338" text-anchor="end" fill="#7d7989" font-size="11">match score</text>
+  <rect x="498" y="360" width="700" height="6" rx="3" fill="#232231"/>
+  <rect x="498" y="360" width="546" height="6" rx="3" fill="url(#bar2)"/>
+  <rect x="498" y="382" width="330" height="26" rx="6" fill="#141a24" stroke="#22d3ee" stroke-opacity="0.2"/>
+  <text x="512" y="399" fill="#8fd6e6" font-size="11">“owned CI/CD + model registry for 5 services”</text>
+
+  <!-- card 3 -->
+  <rect x="428" y="436" width="820" height="120" rx="12" fill="#131220" stroke="#ffffff" stroke-opacity="0.06"/>
+  <circle cx="466" cy="466" r="16" fill="#222131"/><text x="466" y="471" text-anchor="middle" fill="#c9c6d4" font-size="13" font-weight="700">3</text>
+  <text x="498" y="464" fill="#f3f1f7" font-size="17" font-weight="600">Candidate C</text>
+  <text x="498" y="486" fill="#8f8b9b" font-size="12.5">2 yrs · research-heavy, no production record</text>
+  <text x="1220" y="464" text-anchor="end" fill="#8f8b9b" font-size="24" font-weight="700">61</text>
+  <rect x="498" y="506" width="700" height="6" rx="3" fill="#232231"/>
+  <rect x="498" y="506" width="427" height="6" rx="3" fill="#3a3947"/>
+  <text x="498" y="538" fill="#7d7989" font-size="11">flagged: “no deployment cited” — reviewer note attached</text>
+
+  <!-- reasoning footer -->
+  <rect x="428" y="576" width="820" height="192" rx="12" fill="#100f19" stroke="#ffffff" stroke-opacity="0.05"/>
+  <text x="452" y="606" fill="#8f8b9b" font-size="12" letter-spacing="2">WHY A, NOT B</text>
+  <text x="452" y="636" fill="#c9c6d4" font-size="13">Every score points back at the line in the CV that justified it, so a</text>
+  <text x="452" y="658" fill="#c9c6d4" font-size="13">rejection can be explained and audited — not just a number.</text>
+  <g font-size="11.5" fill="#7d7989">
+    <text x="452" y="702">LangGraph · Claude API · FAISS · FastAPI</text>
+  </g>
+  <rect x="452" y="716" width="150" height="30" rx="6" fill="#1b1a28"/><text x="527" y="736" text-anchor="middle" fill="#c9c6d4" font-size="12">Export shortlist</text>
+</svg>
