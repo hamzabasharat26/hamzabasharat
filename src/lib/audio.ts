@@ -19,11 +19,7 @@
    component is inert.
    ============================================================ */
 
-import { useSyncExternalStore } from "react";
-
 type Bed = "landing" | "agent" | null;
-
-const LS_MUTED = "hp_muted_v1";
 
 const SRC = {
   landing: "/sounds/portfolio-music.mp3",
@@ -37,14 +33,6 @@ const AGENT_MUSIC_VOLUME = 0.16;
 const AGENT_VOICE_VOLUME = 0.32;
 const CLICK_VOLUME = 0.35;
 const CLICK_POOL_SIZE = 4;
-
-function readFlag(key: string): boolean {
-  try {
-    return localStorage.getItem(key) === "1";
-  } catch {
-    return false;
-  }
-}
 
 function isBrowser() {
   return typeof window !== "undefined";
@@ -88,14 +76,12 @@ function fadeOutAndStop(el: HTMLAudioElement | null, ms: number) {
 // The store. Created lazily on first browser access, never at import time.
 // ---------------------------------------------------------------------------
 type Store = {
-  muted: boolean;
   landingEl: HTMLAudioElement;
   agentMusicEl: HTMLAudioElement;
   agentVoiceEl: HTMLAudioElement;
   clickPool: HTMLAudioElement[];
   clickIdx: number;
   currentBed: Bed;
-  listeners: Set<() => void>;
   clickDelegateInstalled: boolean;
   visibilityInstalled: boolean;
   wasPlaying: Set<HTMLAudioElement>;
@@ -136,14 +122,12 @@ function getStore(): Store | null {
   });
 
   store = {
-    muted: readFlag(LS_MUTED),
     landingEl,
     agentMusicEl,
     agentVoiceEl,
     clickPool,
     clickIdx: 0,
     currentBed: null,
-    listeners: new Set(),
     clickDelegateInstalled: false,
     visibilityInstalled: false,
     wasPlaying: new Set(),
@@ -154,52 +138,12 @@ function getStore(): Store | null {
   return store;
 }
 
-function notify() {
-  store?.listeners.forEach((l) => l());
-}
-
-// ---------------------------------------------------------------------------
-// Mute — checked before every playback attempt; toggling it live also pauses
-// whatever is currently audible, immediately.
-// ---------------------------------------------------------------------------
-export function isMuted(): boolean {
-  return getStore()?.muted ?? false;
-}
-
-export function toggleMute() {
-  const s = getStore();
-  if (!s) return;
-  s.muted = !s.muted;
-  try {
-    localStorage.setItem(LS_MUTED, s.muted ? "1" : "0");
-  } catch {}
-  if (s.muted) {
-    [s.landingEl, s.agentMusicEl, s.agentVoiceEl].forEach((el) => {
-      if (!el.paused) s.wasPlaying.add(el);
-      el.pause();
-    });
-  }
-  notify();
-}
-
-export function subscribeMuted(cb: () => void) {
-  const s = getStore();
-  s?.listeners.add(cb);
-  return () => s?.listeners.delete(cb);
-}
-
-/** Reactive mute state for UI (the mute toggle's icon). */
-export function useMuted(): boolean {
-  return useSyncExternalStore(subscribeMuted, isMuted, () => false);
-}
-
 // ---------------------------------------------------------------------------
 // System 1 — landing ambience. One-shot per page load, autoplay-safe.
 // ---------------------------------------------------------------------------
 export function armLandingMusic() {
   const s = getStore();
   if (!s) return;
-  if (s.muted) return;
 
   const el = s.landingEl;
   el.loop = false;
@@ -217,7 +161,6 @@ export function armLandingMusic() {
   el.addEventListener("playing", onPlaying, { once: true });
 
   const attempt = () => {
-    if (s.muted) return;
     el.currentTime = 0;
     el.volume = 0;
     el.play().catch(() => armFirstGesture(attempt));
@@ -250,7 +193,6 @@ function armFirstGesture(retry: () => void) {
 export function startAgentIntro(onEnd?: () => void): boolean {
   const s = getStore();
   if (!s) return false;
-  if (s.muted) return false;
   if (reducedMotion()) return false; // skips intro audio + all audio-reactive animation together
   if (s.introPlayedThisLoad) return false; // silent — a re-open in the same load, not a fresh one
 
@@ -328,7 +270,7 @@ const TAP_MOVE_TOLERANCE = 10;
 
 export function playClick(rate = 1) {
   const s = getStore();
-  if (!s || s.muted) return;
+  if (!s) return;
   const el = s.clickPool[s.clickIdx];
   s.clickIdx = (s.clickIdx + 1) % s.clickPool.length;
   el.currentTime = 0;
@@ -434,7 +376,7 @@ function installVisibilityHandling() {
           el.pause();
         }
       });
-    } else if (!s.muted) {
+    } else {
       beds.forEach((el) => {
         if (s.wasPlaying.has(el)) {
           s.wasPlaying.delete(el);

@@ -29,10 +29,18 @@ export const agentTopics: AgentTopic[] = [
   {
     id: "build",
     chip: "What do you build?",
-    patterns: ["what do you build", "what do you make", "services", "what do you offer", "specialise", "specialize", "what kind of work", "capabilities", "computer vision", "cv work"],
+    patterns: ["what do you build", "what do you make", "services", "what do you offer", "specialise", "specialize", "what kind of work", "capabilities", "computer vision", "cv work", "software development", "web development", "app development"],
     answer:
-      "Three things, all taken to production. Computer-vision systems — detection, segmentation, pose, OCR, anomaly — trained on real data and deployed on the hardware you already run. RAG agents that cite their sources, wired into the backend you already have. And the automation around both, so the model isn't a demo someone has to babysit. Everything ships with monitoring and a hand-off your team can run without me.",
+      "Four things, always shipped, never a notebook. Computer vision — detection, segmentation, pose, OCR, anomaly — trained on real data, deployed on the hardware you run. Agentic AI and RAG that retrieve, reason and cite sources instead of guessing. The automation workflows that keep both running without a human babysitting them. And the software around it — APIs, dashboards, a desktop or web app — when the job needs a full product, not just a model: MagicQC shipped as both, same vision core underneath. Everything ships with monitoring and a hand-off your team can run without me.",
     cta: { label: "See the work", href: "#work" },
+  },
+  {
+    id: "hire",
+    chip: "Can I hire you for a project?",
+    patterns: ["freelance", "freelancer", "hire for a project", "hire you for a project", "available for hire", "contract work", "outsource this", "take on clients", "new clients", "need a developer", "need an engineer", "looking for a developer", "looking for an engineer", "can you build this", "build this for us", "work for my company", "small business", "for my business", "for my startup", "take on freelance"],
+    answer:
+      "Yes — freelance and contract work is exactly what this site is for. Computer vision, agentic AI, RAG, automation workflows, or the software to ship any of it: describe the problem and I'll say within a day whether it's a fit, no cost to ask. Remote is normal for this work — the pilot below is how we find out before either of us commits to more.",
+    cta: { label: "Email me", href: `mailto:${site.email}` },
   },
   {
     id: "proof",
@@ -47,7 +55,7 @@ export const agentTopics: AgentTopic[] = [
     chip: "What's your stack?",
     patterns: ["your stack", "tech stack", "what tech", "what do you use", "which tools", "tools do you", "what language", "frameworks", "pytorch", "yolo", "tensorflow", "opencv", "libraries", "toolchain"],
     answer:
-      "PyTorch and YOLO for the models, OpenCV for the glue, FastAPI plus Docker to serve them. Edge work runs on OAK-1W / DepthAI and ONNX. For agents it's LangGraph and LangChain over the Claude and OpenAI APIs. I deploy on AWS EC2 and hand off with model versioning and monitoring already in place.",
+      "PyTorch and YOLO for the models, OpenCV for the glue, FastAPI plus Docker to serve them. Edge work runs on OAK-1W / DepthAI and ONNX. For agents it's LangGraph and LangChain over the Claude and OpenAI APIs. When the job needs a full product rather than just an API, it's React, Next.js or Laravel on top — MagicQC ships both a desktop app and a web app on that stack. I deploy on AWS EC2 and hand off with model versioning and monitoring already in place.",
   },
   {
     id: "edge",
@@ -133,4 +141,4 @@ export const agentFallback = {
 };
 
 export const agentGreeting =
-  "I'm Pixel, the assistant for Hamza's portfolio — ask me what he builds, whether it actually ships, how a project runs, cost or timeline. Every answer comes straight from his project record. Pick one below or type your own.";
+  "I'm Pixel, Hamza's portfolio assistant. He's an AI/ML engineer shipping computer vision, agentic AI, RAG and the automation and software around them — production systems, not notebooks. Ask what he builds, whether it actually ships, his stack, cost, or how a project starts. Pick one below or type your own.";

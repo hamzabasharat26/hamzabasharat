@@ -4,7 +4,6 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import AudioBoot from "@/components/AudioBoot";
-import AudioMuteToggle from "@/components/AudioMuteToggle";
 import { site } from "@/content/site";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -56,7 +55,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <SmoothScroll>{children}</SmoothScroll>
         <AudioBoot />
-        <AudioMuteToggle />
       </body>
     </html>
   );
